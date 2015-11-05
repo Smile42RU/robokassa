@@ -27,7 +27,7 @@ class Payment {
     const CULTURE_EN = 'en';
     const CULTURE_RU = 'ru';
 
-    private $baseUrl      = 'https://merchant.roboxchange.com/Index.aspx?';
+    private $baseUrl      = 'https://auth.robokassa.ru/Merchant/Index.aspx?';
     private $isTestMode   = false;
     private $valid        = false;
     private $data;
@@ -53,7 +53,7 @@ class Payment {
         $this->isTestMode         = $testMode;
 
         if ($this->isTestMode) {
-            $this->baseUrl = 'http://test.robokassa.ru/Index.aspx?';
+            $this->baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx?isTest=1&';
         }
 
         $this->data = [
@@ -64,7 +64,7 @@ class Payment {
             'SignatureValue' => '',
             'Encoding'       => 'utf-8',
             'Culture'        => self::CULTURE_RU,
-            'IncCurrLabel'   => '',
+//            'IncCurrLabel'   => '',
         ];
     }
 
@@ -159,7 +159,9 @@ class Payment {
             $this->getCustomParamsString($this->data)
         ]);
 
-        $this->valid = (md5($signature) === strtolower($data['SignatureValue']));
+        if (array_key_exists('SignatureValue', $data)) {
+            $this->valid = (md5($signature) === strtolower($data['SignatureValue']));
+        }
 
         return $this->valid;
     }
